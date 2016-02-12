@@ -1,0 +1,73 @@
+###################
+# Python Snippets #
+###################
+'.source.python':
+  'Debug Print for Python':
+    'prefix': 'pd'
+    'body': """
+      print '\x1B[104m' + " " * 100 + '\x1B[0m' + '\\\\n'
+      print ${1:kw}
+      print '\\\\n' + '\x1B[104m' + " " * 100 + '\x1B[0m'
+    """
+
+  'Debug Print for Python 3':
+    'prefix': 'pd3'
+    'body': """
+      print ('\x1B[104m' + " " * 100 + '\x1B[0m' + '\\\\n')
+      print (${1:kw})
+      print ('\\\\n' + '\x1B[104m' + " " * 100 + '\x1B[0m')
+    """
+################
+# Tee Snippets #
+################
+  'Menu Leaf':
+    'prefix': 'midas.leaf'
+    'body': """
+      Leaf(
+          id='${1}',
+          title=u'${2}',
+          desc="${3}",
+          path='/${4}'
+      )
+    """
+
+  'Object Descriptor':
+    'prefix': 'midas.od'
+    'body': """
+      ${1:od} = ObjectDescriptor(
+          model=model.${2},
+          name=${3:__name__.split('.').pop()},
+          plural_name='${4}',
+          label=u'${5}',
+          plural_label=u'${6}',
+          messages=${7:messages},
+          forms=${8}Form,
+          lists=$8List
+      )
+    """
+
+  'Form':
+    'prefix': 'midas.formclass'
+    'body': """
+      class ${1}(object):
+
+          @classmethod
+          def get_main_form(self, od, action, id=None, **kw):
+              form = widgets.Form(action="/%s/%s" % (od.name, action))
+              main_fields = widgets.FieldGroup(is_wide=True, title=None)
+              main_fields.fields = [
+                ${2}
+              ]
+              ${3}
+              form.fields = [main_fields, ${4}]
+              form.actions = get_actions(od, id)
+              return form
+    """
+######################
+# Tee Model Snippets #
+######################
+  'Primary key Field':
+    'prefix': 'midas.pk'
+    'body': """
+      ${1:id} = Field(${2:Integer}, primary_key=True)${3}
+    """
