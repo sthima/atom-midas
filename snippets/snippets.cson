@@ -17,6 +17,7 @@
       print (${1:kw})
       print ('\\\\n' + '\x1B[104m' + " " * 100 + '\x1B[0m')
     """
+
 ################
 # Tee Snippets #
 ################
@@ -63,6 +64,95 @@
               form.actions = get_actions(od, id)
               return form
     """
+
+  'Generic combo class':
+    'prefix': 'midas.genericcombo'
+    'body': """
+      od = utils.ObjectDescriptor(
+          model=model.GenericCombos,
+          name=__name__.split('.').pop(),
+          plural_name='${1}',
+          label='${2}',
+          plural_label='${3}',
+          messages={
+              'validation_error': message_util.encode_message(
+                  u'Erro na validação dos campos.',
+                  message_util.MESSAGE_ERROR),
+              'no_perm_list': message_util.encode_message(
+                  u'Você não tem permissão para visualizar a lista de $3.',
+                  message_util.MESSAGE_ERROR),
+              'no_perm_view': message_util.encode_message(
+                  u'Você não tem permissão para visualizar uma $3.',
+                  message_util.MESSAGE_ERROR),
+              'no_perm_save': message_util.encode_message(
+                  u'Você não tem permissão para editar $3.',
+                  message_util.MESSAGE_ERROR),
+              'no_perm_new': message_util.encode_message(
+                  u'Você não tem permissão para criar $3.',
+                  message_util.MESSAGE_ERROR),
+              'no_perm_remove': message_util.encode_message(
+                  u'Você não tem permissão para remover $3.',
+                  message_util.MESSAGE_ERROR),
+              'update_success': message_util.encode_message(
+                  u'$2 atualizado com sucesso.',
+                  message_util.MESSAGE_SUCCESS),
+              'save_success': message_util.encode_message(
+                  u'$2 criado com sucesso.',
+                  message_util.MESSAGE_SUCCESS),
+              'remove_fail': message_util.encode_message(
+                  u'Erro ao remover o $2.',
+                  message_util.MESSAGE_ERROR),
+              'remove_success': message_util.encode_message(
+                  u'$2 removido com sucesso.',
+                  message_util.MESSAGE_SUCCESS),
+          },
+          lists=generic_combo_lists('$3', '/${4}/'),
+          forms=generic_combo_forms,
+      )
+
+
+      class ${5}(GenericCombosController):
+
+          def __init__(self, **kw):
+              super($5, self).__init__(**kw)
+              self.od = od
+              self.tabs = []
+
+          @expose(template='midas.view.templates.list')
+          @paginate('data', limit=14, default_order='name')
+          def list(self, **kw):
+              return self.list_render(**kw)
+
+          def list_render(self, **kw):
+              default_filter = {
+                  'target_action': ['__eq__', '$4']
+              }
+              return super($5, self).list_render(default_filter=default_filter, **kw)
+
+          @expose(template='midas.view.templates.edit')
+          def edit(self, id=None, **kw):
+              kw['target_action'] = '$4'
+              method_name = getframeinfo(currentframe())[2]
+              return self.edit_render(method_name, id, **kw)
+        """
+
+  'Generic Combos Imports':
+    'prefix': 'midas.imports.genericcombos'
+    'body': """
+      from inspect import getframeinfo, currentframe
+
+      from midas import utils
+      from midas import paginate
+      from midas.controllers import expose
+      from midas.utils import message as message_util
+
+      from lists.generic_combo_lists import GenericComboLists as generic_combo_lists
+      from forms.generic_combo_forms import GenericComboForms as generic_combo_forms
+
+      from tee import model
+      from tee.controller.combos.generic_combos import GenericCombosController
+    """
+
 ######################
 # Tee Model Snippets #
 ######################
